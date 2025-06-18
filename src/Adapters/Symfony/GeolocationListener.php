@@ -10,7 +10,6 @@
  * @author   Rumen Damyanov <contact@rumenx.com>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     https://github.com/RumenDamyanov/php-geolocation
- * @version  GIT: <git_id>
  */
 
 namespace Rumenx\Geolocation\Adapters\Symfony;
@@ -22,12 +21,6 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
  * Class GeolocationListener
  *
  * Handles geolocation and language detection for Symfony requests.
- *
- * @category Geolocation
- * @package  Rumenx\Geolocation\Adapters\Symfony
- * @author   Rumen Damyanov <contact@rumenx.com>
- * @license  https://opensource.org/licenses/MIT MIT License
- * @link     https://github.com/RumenDamyanov/php-geolocation
  */
 class GeolocationListener
 {

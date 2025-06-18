@@ -10,7 +10,6 @@
  * @author   Rumen Damyanov <contact@rumenx.com>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     https://github.com/RumenDamyanov/php-geolocation
- * @version  PHP 8.1+
  */
 
 namespace Rumenx\Geolocation\Adapters\Laravel;
@@ -21,12 +20,6 @@ use Illuminate\Support\ServiceProvider;
  * Class GeolocationServiceProvider
  *
  * Laravel service provider for geolocation integration.
- *
- * @category Geolocation
- * @package  Rumenx\Geolocation\Adapters\Laravel
- * @author   Rumen Damyanov <contact@rumenx.com>
- * @license  https://opensource.org/licenses/MIT MIT License
- * @link     https://github.com/RumenDamyanov/php-geolocation
  */
 class GeolocationServiceProvider extends ServiceProvider
 {

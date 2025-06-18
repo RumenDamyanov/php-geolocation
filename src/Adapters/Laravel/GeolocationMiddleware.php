@@ -10,7 +10,6 @@
  * @author   Rumen Damyanov <contact@rumenx.com>
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     https://github.com/RumenDamyanov/php-geolocation
- * @version  GIT: <git_id>
  */
 
 namespace Rumenx\Geolocation\Adapters\Laravel;
@@ -23,12 +22,6 @@ use Rumenx\Geolocation\Geolocation;
  * Class GeolocationMiddleware
  *
  * Middleware to set locale and share geo info in Laravel.
- *
- * @category Geolocation
- * @package  Rumenx\Geolocation\Adapters\Laravel
- * @author   Rumen Damyanov <contact@rumenx.com>
- * @license  https://opensource.org/licenses/MIT MIT License
- * @link     https://github.com/RumenDamyanov/php-geolocation
  */
 class GeolocationMiddleware
 {
