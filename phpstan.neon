@@ -1,0 +1,27 @@
+parameters:
+    reportUnmatchedIgnoredErrors: false
+    excludePaths:
+        - src/Adapters/Laravel/*
+        - src/Adapters/Symfony/*
+    ignoreErrors:
+        # Laravel
+        - '#Function config not found#'
+        - '#Function app not found#'
+        - '#Function view not found#'
+        - '#Function config_path not found#'
+        - '#Parameter \$request of method Rumenx\\Geolocation\\Adapters\\Laravel\\GeolocationMiddleware::handle\(\) has invalid type Illuminate\\Http\\Request#'
+        - '#Class Rumenx\\Geolocation\\Adapters\\Laravel\\GeolocationServiceProvider extends unknown class Illuminate\\Support\\ServiceProvider#'
+        - '#Call to an undefined method Rumenx\\Geolocation\\Adapters\\Laravel\\GeolocationServiceProvider::publishes#'
+        - '#Call to an undefined method Rumenx\\Geolocation\\Adapters\\Laravel\\GeolocationServiceProvider::mergeConfigFrom#'
+        # Symfony
+        - '#Class Rumenx\\Geolocation\\Adapters\\Symfony\\DependencyInjection\\Configuration implements unknown interface Symfony\\Component\\Config\\Definition\\ConfigurationInterface#'
+        - '#Method Rumenx\\Geolocation\\Adapters\\Symfony\\DependencyInjection\\Configuration::getConfigTreeBuilder\(\) has invalid return type Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder#'
+        - '#Instantiated class Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder not found#'
+        - '#Call to method getRootNode\(\) on an unknown class Symfony\\Component\\Config\\Definition\\Builder\\TreeBuilder#'
+        - '#Class Rumenx\\Geolocation\\Adapters\\Symfony\\DependencyInjection\\GeolocationExtension extends unknown class Symfony\\Component\\DependencyInjection\\Extension\\Extension#'
+        - '#Parameter \$container of method Rumenx\\Geolocation\\Adapters\\Symfony\\DependencyInjection\\GeolocationExtension::load\(\) has invalid type Symfony\\Component\\DependencyInjection\\ContainerBuilder#'
+        - '#Class Rumenx\\Geolocation\\Adapters\\Symfony\\GeolocationBundle extends unknown class Symfony\\Component\\HttpKernel\\Bundle\\Bundle#'
+        - '#Parameter \$event of method Rumenx\\Geolocation\\Adapters\\Symfony\\GeolocationListener::onKernelRequest\(\) has invalid type Symfony\\Component\\HttpKernel\\Event\\RequestEvent#'
+        - '#Call to method getRequest\(\) on an unknown class Symfony\\Component\\HttpKernel\\Event\\RequestEvent#'
+        # Core null coalesce false positive
+        - '#Offset 0 on non-empty-list<string> on left side of \?\? always exists and is not nullable#'

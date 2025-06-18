@@ -1,0 +1,50 @@
+{
+    "name": "rumenx/php-geolocation",
+    "description": "Framework-agnostic PHP package for Cloudflare geolocation with adapters for Laravel and Symfony.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rumen Damyanov",
+            "email": "contact@rumenx.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Rumenx\\Geolocation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rumenx\\Geolocation\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.36",
+        "phpstan/phpstan": "^1.11",
+        "squizlabs/php_codesniffer": "^3.9"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rumenx\\Geolocation\\Adapters\\Laravel\\GeolocationServiceProvider"
+            ]
+        }
+    },
+    "homepage": "https://github.com/RumenDamyanov/php-geolocation",
+    "support": {
+        "issues": "https://github.com/RumenDamyanov/php-geolocation/issues"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/pest",
+        "coverage": "./vendor/bin/pest --coverage",
+        "analyze": "./vendor/bin/phpstan analyse --level=6 src",
+        "style": "./vendor/bin/phpcs src",
+        "style-fix": "./vendor/bin/phpcbf src"
+    }
+}

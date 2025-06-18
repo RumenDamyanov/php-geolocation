@@ -1,0 +1,14 @@
+services:
+  Rumenx\Geolocation\Geolocation:
+    arguments:
+      $server: '@request_stack'
+      $countryToLanguage: '%geolocation.country_to_language%'
+      $languageCookieName: '%geolocation.language_cookie%'
+    public: true
+    # You may need a factory or custom logic to pass $_SERVER if not using request_stack
+
+  Rumenx\Geolocation\Adapters\Symfony\GeolocationListener:
+    arguments:
+      $countryToLanguage: '%geolocation.country_to_language%'
+    tags:
+      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

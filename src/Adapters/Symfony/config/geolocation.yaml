@@ -1,0 +1,10 @@
+# Geolocation configuration for Symfony
+geolocation:
+  country_to_language:
+    DE: [de]        # Germany
+    AT: [de]        # Austria
+    FR: [fr]        # France
+    CA: [en, fr]    # Canada: English (default), French
+    # Add more as needed
+  default_language: en
+  language_cookie: lang
