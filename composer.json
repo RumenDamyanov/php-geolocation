@@ -1,6 +1,6 @@
 {
     "name": "rumenx/php-geolocation",
-    "description": "Framework-agnostic PHP package for Cloudflare geolocation with adapters for Laravel and Symfony.",
+    "description": "Simple, framework-agnostic PHP utility for Cloudflare geolocation detection and client information extraction.",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -19,21 +19,31 @@
             "Rumenx\\Geolocation\\Tests\\": "tests/"
         }
     },
+    "require": {
+        "php": "^8.3"
+    },
     "require-dev": {
         "pestphp/pest": "^2.36",
         "phpstan/phpstan": "^1.11",
         "squizlabs/php_codesniffer": "^3.9"
     },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Rumenx\\Geolocation\\Adapters\\Laravel\\GeolocationServiceProvider"
-            ]
-        }
-    },
     "homepage": "https://github.com/RumenDamyanov/php-geolocation",
+    "keywords": [
+        "php",
+        "geolocation",
+        "cloudflare",
+        "utility",
+        "language",
+        "country",
+        "ip",
+        "framework-agnostic",
+        "simple"
+    ],
     "support": {
-        "issues": "https://github.com/RumenDamyanov/php-geolocation/issues"
+        "issues": "https://github.com/RumenDamyanov/php-geolocation/issues",
+        "source": "https://github.com/RumenDamyanov/php-geolocation",
+        "docs": "https://github.com/RumenDamyanov/php-geolocation#readme",
+        "funding": "https://github.com/sponsors/RumenDamyanov"
     },
     "config": {
         "allow-plugins": {
@@ -42,9 +52,22 @@
     },
     "scripts": {
         "test": "./vendor/bin/pest",
-        "coverage": "./vendor/bin/pest --coverage",
+        "test:coverage": "./vendor/bin/pest --coverage",
+        "test:coverage-html": "./vendor/bin/pest --coverage-html coverage",
+        "test:coverage-xml": "./vendor/bin/pest --coverage-clover=coverage.xml",
         "analyze": "./vendor/bin/phpstan analyse --level=6 src",
+        "analyze:max": "./vendor/bin/phpstan analyse --level=max src",
         "style": "./vendor/bin/phpcs src",
-        "style-fix": "./vendor/bin/phpcbf src"
+        "style-fix": "./vendor/bin/phpcbf src",
+        "quality": [
+            "@test",
+            "@analyze",
+            "@style"
+        ],
+        "ci": [
+            "@test:coverage-xml",
+            "@analyze",
+            "@style"
+        ]
     }
 }
