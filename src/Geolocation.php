@@ -315,5 +315,46 @@ class Geolocation
         $cookie = $this->server['HTTP_COOKIE'] ?? '';
         return empty($cookie) || !preg_match('/' . preg_quote($this->languageCookieName, '/') . '=/i', $cookie);
     }
+
+    /**
+     * Check if we're in a local development environment.
+     *
+     * @return bool True if local development detected
+     */
+    public function isLocalDevelopment(): bool
+    {
+        $ip = $this->getIp();
+        $host = $this->server['HTTP_HOST'] ?? $this->server['SERVER_NAME'] ?? '';
+
+        // Check for localhost, local IPs, or missing Cloudflare headers
+        return $ip === null ||
+               $ip === '127.0.0.1' ||
+               $ip === '::1' ||
+               str_starts_with($ip, '192.168.') ||
+               str_starts_with($ip, '10.') ||
+               str_starts_with($ip, '172.16.') ||
+               str_contains($host, 'localhost') ||
+               str_contains($host, '.local') ||
+               !isset($this->server['HTTP_CF_IPCOUNTRY']);
+    }
+
+    /**
+     * Create a Geolocation instance with simulated data for local development.
+     *
+     * @param string                                   $countryCode        Country code to simulate
+     * @param array<string, string|array<int, string>> $countryToLanguage  Country to language mapping
+     * @param string                                   $languageCookieName Language cookie name
+     * @param array<string, mixed>                     $options            Additional simulation options
+     *
+     * @return Geolocation Geolocation instance with simulated data
+     */
+    public static function simulate(
+        string $countryCode = 'US',
+        array $countryToLanguage = [],
+        string $languageCookieName = 'lang',
+        array $options = []
+    ): Geolocation {
+        return GeolocationSimulator::create($countryCode, $countryToLanguage, $languageCookieName, $options);
+    }
 }
 // @phpcs:enable Generic.Files.LineLength
