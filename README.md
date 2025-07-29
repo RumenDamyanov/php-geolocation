@@ -5,20 +5,42 @@
 [![Style](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/style.yml/badge.svg?branch=master)](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/style.yml)
 [![codecov](https://codecov.io/gh/RumenDamyanov/php-geolocation/branch/master/graph/badge.svg)](https://codecov.io/gh/RumenDamyanov/php-geolocation)
 
-A framework-agnostic PHP package for Cloudflare geolocation detection, with adapters for Laravel and Symfony. Provides helpers to access geolocation, language, and client information (OS, browser, device, resolution) from Cloudflare headers and other sources, and allows easy integration for language selection and other geolocation-based logic.
+A simple, framework-agnostic PHP utility for Cloudflare geolocation detection and client information extraction. Provides helpers to access geolocation, language, and client information (OS, browser, device, resolution) from HTTP headers.
 
 ## Features
 
-- Detects Cloudflare geolocation headers (country, IP, etc.)
-- Helper methods to access geolocation, language, and client info (OS, browser, device, resolution)
-- Configurable country-to-language mapping (supports multiple official languages per country)
-- Language negotiation: matches browser and available site languages for multi-language countries
-- Configurable language cookie name
-- Configurable fields for returned visitor info
-- Laravel middleware and config publishing
-- Symfony bundle, event listener, YAML/PHP config, and service registration
-- Fully tested with Pest
-- PSR-12 compliant, static analysis and style checks
+- 🌍 Detects Cloudflare geolocation headers (country, IP, etc.)
+- 🔍 Helper methods to access geolocation, language, and client info (OS, browser, device, resolution)
+- 🌐 Configurable country-to-language mapping (supports multiple official languages per country)
+- 🤝 Language negotiation: matches browser and available site languages for multi-language countries
+- 🍪 Configurable language cookie name
+- ⚙️ Configurable fields for returned visitor info
+- 🧪 Fully tested with Pest (100% coverage)
+- ✅ PSR-12 compliant, static analysis and style checks
+- 🚀 Simple utility class - no framework dependencies or complex setup required
+
+## Why This Design?
+
+This package is intentionally designed as a **simple utility library** rather than a complex framework integration. Here's why:
+
+### 🎯 Focused Purpose
+- **Single responsibility**: Extract and process geolocation data from HTTP headers
+- **Pure functions**: No side effects, no global state, predictable behavior
+- **Framework-agnostic**: Works with any PHP application or framework
+
+### 🔧 Easy Integration
+- **No service providers needed**: Just instantiate the class when you need it
+- **No configuration files**: Pass configuration directly to the constructor
+- **No middleware complexity**: Use it exactly where and when you need it
+- **Developer control**: You decide how and when to use geolocation data
+
+### 📦 Minimal Dependencies
+- **Zero runtime dependencies**: Only requires PHP 8.3+
+- **Small footprint**: Single class, focused functionality
+- **Fast installation**: No complex dependency trees
+- **Version compatibility**: No framework version constraints
+
+This approach makes the package more reliable, easier to understand, and simpler to maintain - following the Unix philosophy of "do one thing and do it well."
 
 ## Installation
 
@@ -28,133 +50,305 @@ composer require rumenx/php-geolocation
 
 ## Usage
 
-### Plain PHP (Framework-agnostic)
+### Basic Usage
 
 ```php
 use Rumenx\Geolocation\Geolocation;
 
+// Simple usage with defaults
+$geo = new Geolocation();
+$country = $geo->getCountryCode();
+$ip = $geo->getIp();
+$info = $geo->getGeoInfo();
+
+// Advanced usage with custom configuration
 $countryToLanguage = [
     'CA' => ['en', 'fr'], // Canada: English (default), French
-    'DE' => ['de'],
-    // ...
+    'DE' => ['de'],       // Germany: German
+    'CH' => ['de', 'fr', 'it'], // Switzerland: German, French, Italian
+    // Add more countries as needed...
 ];
 
 $geo = new Geolocation(
-    $_SERVER,                // HTTP server array
-    $countryToLanguage,      // Country-to-language mapping
-    'my_lang_cookie'         // (optional) custom cookie name, default: 'lang'
+    $_SERVER,                // HTTP server array (optional, defaults to $_SERVER)
+    $countryToLanguage,      // Country-to-language mapping (optional)
+    'my_lang_cookie'         // Custom cookie name (optional, defaults to 'lang')
 );
+```
 
-// Get best language for visitor from Canada, given available site languages
-$lang = $geo->getLanguageForCountry(null, ['en', 'fr', 'de']);
-// Logic:
+### Language Detection
+
+```php
+// Get best language for visitor based on country and browser preferences
+$availableSiteLanguages = ['en', 'fr', 'de', 'es'];
+$lang = $geo->getLanguageForCountry(null, $availableSiteLanguages);
+
+// Language selection logic:
 // 1. If browser preferred language matches a country language and is available, use it
-// 2. Else, check all browser languages for a match
+// 2. Else, check all browser languages for a match with available languages
 // 3. Else, use the first country language as fallback
+// 4. Returns null if no match found
 
-// Get all info (default)
+// Check if language should be set (based on cookie)
+if ($geo->shouldSetLanguage()) {
+    // Set language in your application
+    setcookie($geo->languageCookieName, $lang);
+}
+```
+
+### Client Information
+
+```php
+// Get specific information
+$country = $geo->getCountryCode();     // 'US', 'CA', 'DE', etc.
+$ip = $geo->getIp();                   // '192.168.1.1'
+$browser = $geo->getBrowser();         // ['name' => 'Chrome', 'version' => '91.0']
+$os = $geo->getOs();                   // 'Windows 10', 'macOS', 'Linux', etc.
+$device = $geo->getDeviceType();       // 'desktop', 'mobile', 'tablet'
+$resolution = $geo->getResolution();   // ['width' => 1920, 'height' => 1080]
+
+// Get all information at once
 $info = $geo->getGeoInfo();
+// Returns: [
+//     'country_code' => 'US',
+//     'ip' => '192.168.1.1',
+//     'preferred_language' => 'en-US',
+//     'all_languages' => ['en-US', 'en', 'fr'],
+//     'user_agent' => 'Mozilla/5.0...',
+//     'browser' => ['name' => 'Chrome', 'version' => '91.0'],
+//     'os' => 'Windows 10',
+//     'device_type' => 'desktop',
+//     'resolution' => ['width' => 1920, 'height' => 1080]
+// ]
 
 // Get only specific fields
-$info = $geo->getGeoInfo(['country_code', 'ip']);
+$specificInfo = $geo->getGeoInfo(['country_code', 'ip', 'browser']);
+```
 
-// Check if language should be set (based on custom cookie name)
-if ($geo->shouldSetLanguage()) {
-    // ...
+### Framework Integration Examples
+
+#### Laravel
+
+```php
+// In a controller
+class HomeController extends Controller
+{
+    public function index(Request $request)
+    {
+        $geo = new Geolocation(
+            $request->server->all(),
+            config('app.country_to_language', [])
+        );
+
+        $country = $geo->getCountryCode();
+        $lang = $geo->getLanguageForCountry(null, ['en', 'fr', 'de']);
+
+        if ($geo->shouldSetLanguage() && $lang) {
+            app()->setLocale($lang);
+        }
+
+        return view('home', [
+            'geo' => $geo->getGeoInfo(['country_code', 'ip']),
+            'language' => $lang
+        ]);
+    }
+}
+
+// In a middleware (optional)
+class GeolocationMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        $geo = new Geolocation($request->server->all());
+        $lang = $geo->getLanguageForCountry();
+
+        if ($lang && $geo->shouldSetLanguage()) {
+            app()->setLocale($lang);
+        }
+
+        return $next($request);
+    }
 }
 ```
 
-### Laravel
-
-1. Register the middleware or use the service provider:
-   - Add `Rumenx\Geolocation\Adapters\Laravel\GeolocationMiddleware` to your middleware stack.
-   - Or, register the service provider (auto-discovered via composer.json).
-2. Publish the config:
-   ```bash
-   php artisan vendor:publish --tag=geolocation-config
-   ```
-3. Configure `config/geolocation.php` as needed (country-to-language mapping, cookie name, etc).
-
-**Example usage in a controller:**
+#### Symfony
 
 ```php
-use Rumenx\Geolocation\Geolocation;
-
-public function index(Geolocation $geo)
+// In a controller
+class HomeController extends AbstractController
 {
-    $lang = $geo->getLanguageForCountry(null, ['en', 'fr', 'de']);
-    $info = $geo->getGeoInfo();
-    // ...
+    public function index(Request $request): Response
+    {
+        $geo = new Geolocation(
+            $request->server->all(),
+            $this->getParameter('country_to_language')
+        );
+
+        $country = $geo->getCountryCode();
+        $lang = $geo->getLanguageForCountry(null, ['en', 'fr', 'de']);
+
+        if ($geo->shouldSetLanguage() && $lang) {
+            $request->setLocale($lang);
+        }
+
+        return $this->render('home.html.twig', [
+            'geo' => $geo->getGeoInfo(),
+            'language' => $lang
+        ]);
+    }
+}
+
+// In an event listener (optional)
+class GeolocationListener
+{
+    public function onKernelRequest(RequestEvent $event): void
+    {
+        $request = $event->getRequest();
+        $geo = new Geolocation($request->server->all());
+        $lang = $geo->getLanguageForCountry();
+
+        if ($lang && $geo->shouldSetLanguage()) {
+            $request->setLocale($lang);
+        }
+    }
 }
 ```
 
-### Symfony
-
-1. Register the bundle in `config/bundles.php`:
-   ```php
-   return [
-       // ...
-       Rumenx\Geolocation\Adapters\Symfony\GeolocationBundle::class => ['all' => true],
-   ];
-   ```
-2. Configure via YAML or PHP (see `src/Adapters/Symfony/config/geolocation.yaml`):
-   ```yaml
-   geolocation:
-     country_to_language:
-       DE: [de]
-       AT: [de]
-       FR: [fr]
-       CA: [en, fr]
-     default_language: en
-     language_cookie: lang
-   ```
-3. Register services and event listener in your `services.yaml`:
-   ```yaml
-   services:
-     Rumenx\Geolocation\Geolocation:
-       arguments:
-         $server: '@request_stack'
-         $countryToLanguage: '%geolocation.country_to_language%'
-         $languageCookieName: '%geolocation.language_cookie%'
-       public: true
-
-     Rumenx\Geolocation\Adapters\Symfony\GeolocationListener:
-       arguments:
-         $countryToLanguage: '%geolocation.country_to_language%'
-       tags:
-         - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
-   ```
-
-**Example usage in a controller:**
+#### Plain PHP
 
 ```php
-use Rumenx\Geolocation\Geolocation;
+// In any PHP application
+session_start();
 
-public function index(Geolocation $geo)
-{
-    $lang = $geo->getLanguageForCountry(null, ['en', 'fr', 'de']);
-    $info = $geo->getGeoInfo();
-    // ...
+$geo = new Geolocation($_SERVER, [
+    'US' => ['en'],
+    'CA' => ['en', 'fr'],
+    'DE' => ['de'],
+    'FR' => ['fr']
+]);
+
+$country = $geo->getCountryCode();
+$lang = $geo->getLanguageForCountry(null, ['en', 'fr', 'de']);
+
+// Set language preference
+if ($geo->shouldSetLanguage() && $lang) {
+    $_SESSION['language'] = $lang;
+    setcookie('lang', $lang, time() + (86400 * 30)); // 30 days
 }
+
+// Use the information
+echo "Welcome visitor from: " . ($country ?? 'Unknown');
+echo "Preferred language: " . ($lang ?? 'Default');
 ```
 
 ## Configuration
 
-The package is highly configurable. You can set the following options (see `src/config/geolocation.php` or your framework's config):
+The package is simple and requires minimal configuration. All settings are passed directly to the constructor:
 
-- `country_to_language` (array): Map country codes (ISO 3166-1 alpha-2) to language codes or arrays. The first language is the default for the country. Example:
-  ```php
-  'country_to_language' => [
-      'DE' => ['de'],
-      'AT' => ['de'],
-      'FR' => ['fr'],
-      'CA' => ['en', 'fr'],
-  ],
-  ```
-- `default_language` (string): Fallback language if no match is found. Default: `'en'`.
-- `language_cookie` (string): Name of the language cookie to check/set. Default: `'lang'`.
+### Constructor Parameters
 
-You can override these in your Laravel or Symfony config files as needed.
+```php
+$geo = new Geolocation($server, $countryToLanguage, $languageCookieName);
+```
+
+- **`$server`** (array, optional): HTTP server array, defaults to `$_SERVER`
+- **`$countryToLanguage`** (array, optional): Country code to language mapping
+- **`$languageCookieName`** (string, optional): Language cookie name, defaults to `'lang'`
+
+### Country-to-Language Mapping
+
+Map country codes (ISO 3166-1 alpha-2) to language codes or arrays. The first language is the default for the country:
+
+```php
+$countryToLanguage = [
+    'US' => ['en'],                    // United States: English only
+    'CA' => ['en', 'fr'],              // Canada: English (default), French
+    'CH' => ['de', 'fr', 'it', 'rm'],  // Switzerland: German (default), French, Italian, Romansh
+    'BE' => ['nl', 'fr', 'de'],        // Belgium: Dutch (default), French, German
+    'IN' => ['hi', 'en'],              // India: Hindi (default), English
+    'ZA' => ['en', 'af', 'zu'],        // South Africa: English (default), Afrikaans, Zulu
+    // Add more countries as needed...
+];
+```
+
+### Example Configurations
+
+#### Minimal Setup
+```php
+// Use defaults for everything
+$geo = new Geolocation();
+```
+
+#### Basic Country Mapping
+```php
+$geo = new Geolocation($_SERVER, [
+    'DE' => ['de'],
+    'FR' => ['fr'],
+    'ES' => ['es']
+]);
+```
+
+#### Custom Cookie Name
+```php
+$geo = new Geolocation($_SERVER, [], 'user_language');
+```
+
+#### Full Configuration
+```php
+$geo = new Geolocation(
+    $_SERVER,  // or $request->server->all() in frameworks
+    [
+        'US' => ['en'],
+        'CA' => ['en', 'fr'],
+        'MX' => ['es'],
+        'DE' => ['de'],
+        'AT' => ['de'],
+        'CH' => ['de', 'fr', 'it'],
+        'FR' => ['fr'],
+        'BE' => ['nl', 'fr'],
+        'IT' => ['it'],
+        'ES' => ['es'],
+        'BR' => ['pt'],
+        'PT' => ['pt'],
+        'RU' => ['ru'],
+        'CN' => ['zh'],
+        'JP' => ['ja'],
+        'KR' => ['ko']
+    ],
+    'preferred_language'
+);
+```
+
+No configuration files, service providers, or complex setup needed!
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to contribute to this project.
+
+### Development
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests: `composer test`
+5. Run static analysis: `composer analyze`
+6. Check code style: `composer style`
+7. Submit a pull request
+
+## Security
+
+If you discover a security vulnerability, please see our [Security Policy](SECURITY.md) for information on how to report it responsibly.
+
+## Changelog
+
+All notable changes to this project are documented in the [Changelog](CHANGELOG.md).
+
+## Support
+
+- 📖 [Documentation](README.md)
+- 🐛 [Issue Tracker](https://github.com/RumenDamyanov/php-geolocation/issues)
+- 💬 [Discussions](https://github.com/RumenDamyanov/php-geolocation/discussions)
+- 💖 [Sponsor this project](FUNDING.md)
 
 ## License
 
