@@ -15,6 +15,8 @@ A simple, framework-agnostic PHP utility for Cloudflare geolocation detection an
 - 🤝 Language negotiation: matches browser and available site languages for multi-language countries
 - 🍪 Configurable language cookie name
 - ⚙️ Configurable fields for returned visitor info
+- 🛠️ **Local development simulation** - Fake Cloudflare headers for testing without production setup
+- 🎭 **Auto-detection** of local environments (localhost, local IPs, missing Cloudflare headers)
 - 🧪 Fully tested with Pest (100% coverage)
 - ✅ PSR-12 compliant, static analysis and style checks
 - 🚀 Simple utility class - no framework dependencies or complex setup required
@@ -47,6 +49,66 @@ This approach makes the package more reliable, easier to understand, and simpler
 ```bash
 composer require rumenx/php-geolocation
 ```
+
+## Local Development Simulation
+
+When developing locally where Cloudflare is not available, you can simulate its functionality:
+
+### Quick Simulation
+
+```php
+use Rumenx\Geolocation\Geolocation;
+
+// Create a simulated instance for a specific country
+$geo = Geolocation::simulate('DE', [
+    'DE' => ['de'],
+    'CA' => ['en', 'fr']
+]);
+
+echo $geo->getCountryCode(); // 'DE'
+echo $geo->getIp(); // Simulated IP like '192.168.4.123'
+```
+
+### Advanced Simulation
+
+```php
+use Rumenx\Geolocation\GeolocationSimulator;
+
+// Generate fake Cloudflare headers
+$headers = GeolocationSimulator::fakeCloudflareHeaders('JP', [
+    'user_agent' => 'Custom User Agent',
+    'server_name' => 'dev.example.com'
+]);
+
+// Create instance with simulated server data
+$geo = new Geolocation($headers, ['JP' => ['ja', 'en']]);
+```
+
+### Auto-Detection of Local Environment
+
+```php
+$geo = new Geolocation();
+
+if ($geo->isLocalDevelopment()) {
+    // Automatically detected: localhost, local IPs, or missing Cloudflare headers
+    echo "Running in local development mode";
+}
+```
+
+### Available Countries for Simulation
+
+```php
+// Get list of built-in countries
+$countries = GeolocationSimulator::getAvailableCountries();
+// ['US', 'CA', 'GB', 'DE', 'FR', 'JP', 'AU', 'BR']
+
+// Get random country for testing
+$randomCountry = GeolocationSimulator::randomCountry();
+```
+
+### Framework Integration for Development
+
+For Laravel and Symfony, check the `/examples` directory for middleware and event listeners that automatically inject simulated Cloudflare headers in development environments.
 
 ## Usage
 
@@ -320,6 +382,43 @@ $geo = new Geolocation(
 ```
 
 No configuration files, service providers, or complex setup needed!
+
+## Examples
+
+The [`examples/`](examples/) directory contains practical demonstrations of the package capabilities:
+
+### 🎯 Basic Usage
+
+- **[`demo.php`](examples/demo.php)** - Interactive demo showing simulation in local development with multiple countries
+
+### ⚡ Framework Integration
+
+- **[`LaravelDevelopmentMiddleware.php`](examples/LaravelDevelopmentMiddleware.php)** - Laravel middleware for automatic header injection in development
+- **[`SymfonyDevelopmentListener.php`](examples/SymfonyDevelopmentListener.php)** - Symfony event listener for request-level simulation
+
+### 🌍 Real-World Applications
+
+- **[`content-localization.php`](examples/content-localization.php)** - Redirect visitors to country-specific domains
+- **[`api-endpoint.php`](examples/api-endpoint.php)** - REST API with geolocation-based responses (currency, features, etc.)
+- **[`multi-language.php`](examples/multi-language.php)** - Automatic language detection with fallbacks for multi-language sites
+
+### Running Examples
+
+```bash
+# Basic simulation demo
+php examples/demo.php
+
+# Content localization
+php examples/content-localization.php
+
+# API endpoint simulation
+php examples/api-endpoint.php
+
+# Multi-language detection
+php examples/multi-language.php
+```
+
+All examples automatically detect local development and use simulation, so they work perfectly without Cloudflare setup! 🚀
 
 ## Contributing
 
