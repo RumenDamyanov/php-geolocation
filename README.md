@@ -21,6 +21,28 @@ A simple, framework-agnostic PHP utility for Cloudflare geolocation detection an
 - ✅ PSR-12 compliant, static analysis and style checks
 - 🚀 Simple utility class - no framework dependencies or complex setup required
 
+## 📚 Documentation & Wiki
+
+For comprehensive documentation, examples, and advanced usage patterns, visit our **[Complete Wiki Documentation](https://github.com/RumenDamyanov/php-geolocation/wiki)**:
+
+### 🚀 Quick Links
+
+- **[Quick Start Guide](https://github.com/RumenDamyanov/php-geolocation/wiki/quick-start)** - Get running in minutes
+- **[Framework Integration](https://github.com/RumenDamyanov/php-geolocation/wiki/laravel-integration)** - Laravel, Symfony, CodeIgniter guides
+- **[CloudFlare Setup](https://github.com/RumenDamyanov/php-geolocation/wiki/cloudflare-setup)** - Production configuration
+- **[Local Development](https://github.com/RumenDamyanov/php-geolocation/wiki/simulation)** - Testing without CloudFlare
+- **[Multi-language Websites](https://github.com/RumenDamyanov/php-geolocation/wiki/multilang-websites)** - International applications
+- **[Production Deployment](https://github.com/RumenDamyanov/php-geolocation/wiki/production)** - Best practices & monitoring
+- **[API Development](https://github.com/RumenDamyanov/php-geolocation/wiki/api-patterns)** - RESTful APIs with geolocation
+- **[Configuration Reference](https://github.com/RumenDamyanov/php-geolocation/wiki/config-reference)** - Complete options guide
+
+### 📖 Advanced Topics
+
+- **[Error Handling](https://github.com/RumenDamyanov/php-geolocation/wiki/error-handling)** - Robust error management
+- **[Caching Strategies](https://github.com/RumenDamyanov/php-geolocation/wiki/caching)** - Performance optimization
+- **[Analytics Integration](https://github.com/RumenDamyanov/php-geolocation/wiki/analytics)** - Geographic tracking
+- **[Troubleshooting](https://github.com/RumenDamyanov/php-geolocation/wiki/troubleshooting)** - Common issues & solutions
+
 ## Why This Design?
 
 This package is intentionally designed as a **simple utility library** rather than a complex framework integration. Here's why:
@@ -424,6 +446,10 @@ All examples automatically detect local development and use simulation, so they 
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to contribute to this project.
 
+### Code of Conduct
+
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
+
 ### Development
 
 1. Fork the repository
@@ -433,6 +459,18 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 5. Run static analysis: `composer analyze`
 6. Check code style: `composer style`
 7. Submit a pull request
+
+## Related Projects
+
+### 🐹 Go Version
+
+- **[go-geolocation](https://github.com/RumenDamyanov/go-geolocation)** - Go adaptation of this package with similar functionality for the Go ecosystem
+
+### 🔮 Future Versions (Planned)
+
+- **Python version** - Python adaptation planned for future release
+- **WordPress plugin** - WordPress integration plugin planned
+- **Drupal module** - Drupal integration module planned
 
 ## Security
 
