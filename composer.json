@@ -1,12 +1,26 @@
 {
     "name": "rumenx/php-geolocation",
-    "description": "Simple, framework-agnostic PHP utility for Cloudflare geolocation detection and client information extraction.",
+    "description": "Framework-agnostic PHP utility for CloudFlare geolocation detection with multi-language support and local development simulation.",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Rumen Damyanov",
-            "email": "contact@rumenx.com"
+            "email": "contact@rumenx.com",
+            "homepage": "https://github.com/RumenDamyanov",
+            "role": "Developer"
+        }
+    ],
+    "homepage": "https://github.com/RumenDamyanov/php-geolocation",
+    "support": {
+        "issues": "https://github.com/RumenDamyanov/php-geolocation/issues",
+        "source": "https://github.com/RumenDamyanov/php-geolocation",
+        "docs": "https://github.com/RumenDamyanov/php-geolocation/wiki"
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/RumenDamyanov"
         }
     ],
     "autoload": {
@@ -20,7 +34,7 @@
         }
     },
     "require": {
-        "php": "^8.3"
+        "php": "^8.2"
     },
     "require-dev": {
         "pestphp/pest": "^2.36 || ^3.0 || ^4.0",
