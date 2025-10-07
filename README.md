@@ -1,6 +1,6 @@
 # php-geolocation
 
-[![Test](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/test.yml)
+[![CI](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/ci.yml)
 [![Analyze](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/analyze.yml/badge.svg?branch=master)](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/analyze.yml)
 [![Style](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/style.yml/badge.svg?branch=master)](https://github.com/RumenDamyanov/php-geolocation/actions/workflows/style.yml)
 [![codecov](https://codecov.io/gh/RumenDamyanov/php-geolocation/branch/master/graph/badge.svg)](https://codecov.io/gh/RumenDamyanov/php-geolocation)
