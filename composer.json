@@ -54,6 +54,9 @@
         }
     },
     "config": {
+        "platform": {
+            "php": "8.3.36"
+        },
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
