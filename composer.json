@@ -3,6 +3,17 @@
     "description": "Framework-agnostic PHP utility for CloudFlare geolocation detection with multi-language support and local development simulation.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "php",
+        "geolocation",
+        "cloudflare",
+        "utility",
+        "language",
+        "country",
+        "ip",
+        "framework-agnostic",
+        "simple"
+    ],
     "authors": [
         {
             "name": "Rumen Damyanov",
@@ -15,7 +26,8 @@
     "support": {
         "issues": "https://github.com/RumenDamyanov/php-geolocation/issues",
         "source": "https://github.com/RumenDamyanov/php-geolocation",
-        "docs": "https://github.com/RumenDamyanov/php-geolocation/wiki"
+        "docs": "https://github.com/RumenDamyanov/php-geolocation/wiki",
+        "funding": "https://github.com/sponsors/RumenDamyanov"
     },
     "funding": [
         {
@@ -23,6 +35,14 @@
             "url": "https://github.com/sponsors/RumenDamyanov"
         }
     ],
+    "require": {
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.0",
+        "phpstan/phpstan": "^2.0",
+        "squizlabs/php_codesniffer": "^3.9 || ^4.0"
+    },
     "autoload": {
         "psr-4": {
             "Rumenx\\Geolocation\\": "src/"
@@ -32,32 +52,6 @@
         "psr-4": {
             "Rumenx\\Geolocation\\Tests\\": "tests/"
         }
-    },
-    "require": {
-        "php": "^8.2"
-    },
-    "require-dev": {
-        "pestphp/pest": "^2.36 || ^3.0",
-        "phpstan/phpstan": "^1.11 || ^2.0",
-        "squizlabs/php_codesniffer": "^3.9 || ^4.0"
-    },
-    "homepage": "https://github.com/RumenDamyanov/php-geolocation",
-    "keywords": [
-        "php",
-        "geolocation",
-        "cloudflare",
-        "utility",
-        "language",
-        "country",
-        "ip",
-        "framework-agnostic",
-        "simple"
-    ],
-    "support": {
-        "issues": "https://github.com/RumenDamyanov/php-geolocation/issues",
-        "source": "https://github.com/RumenDamyanov/php-geolocation",
-        "docs": "https://github.com/RumenDamyanov/php-geolocation#readme",
-        "funding": "https://github.com/sponsors/RumenDamyanov"
     },
     "config": {
         "allow-plugins": {

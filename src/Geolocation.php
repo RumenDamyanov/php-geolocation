@@ -66,7 +66,12 @@ class Geolocation
      */
     public function getCountryCode(): ?string
     {
-        return $this->server['HTTP_CF_IPCOUNTRY'] ?? null;
+        $code = strtoupper(trim((string) ($this->server['HTTP_CF_IPCOUNTRY'] ?? '')));
+        if (preg_match('/^[A-Z]{2}$/', $code) !== 1) {
+            return null;
+        }
+
+        return $code;
     }
 
     /**
@@ -76,9 +81,14 @@ class Geolocation
      */
     public function getIp(): ?string
     {
-        return $this->server['HTTP_CF_CONNECTING_IP']
-            ?? $this->server['REMOTE_ADDR']
-            ?? null;
+        foreach (['HTTP_CF_CONNECTING_IP', 'REMOTE_ADDR'] as $key) {
+            $ip = $this->server[$key] ?? null;
+            if (is_string($ip) && filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+                return $ip;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -88,12 +98,7 @@ class Geolocation
      */
     public function getPreferredLanguage(): ?string
     {
-        $header = $this->server['HTTP_ACCEPT_LANGUAGE'] ?? null;
-        if (!$header) {
-            return null;
-        }
-        $langs = explode(',', $header);
-        return $langs[0] ?? null;
+        return $this->parseAcceptLanguages()[0] ?? null;
     }
 
     /**
@@ -103,11 +108,7 @@ class Geolocation
      */
     public function getAllLanguages(): array
     {
-        $header = $this->server['HTTP_ACCEPT_LANGUAGE'] ?? '';
-        return array_map(
-            fn($l) => trim(explode(';', $l)[0]),
-            explode(',', $header)
-        );
+        return $this->parseAcceptLanguages();
     }
 
     /**
@@ -132,19 +133,21 @@ class Geolocation
             return ['browser' => null, 'version' => null];
         }
         // Simple regexes for common browsers
-        if (
-            preg_match(
-                '/(Edge|Edg|OPR|Chrome|Safari|Firefox|MSIE|Trident)\/([\d.]+)/i',
-                $ua,
-                $m
-            )
+        foreach (
+            [
+                'Edg' => 'Edge',
+                'Edge' => 'Edge',
+                'OPR' => 'Opera',
+                'Chrome' => 'Chrome',
+                'Firefox' => 'Firefox',
+                'Safari' => 'Safari',
+                'MSIE' => 'MSIE',
+                'Trident' => 'IE',
+            ] as $token => $name
         ) {
-            $browser = $m[1] === 'OPR' ? 'Opera' : (
-                $m[1] === 'Edg' ? 'Edge' : (
-                    $m[1] === 'Trident' ? 'IE' : $m[1]
-                )
-            );
-            return ['browser' => $browser, 'version' => $m[2]];
+            if (preg_match('/' . preg_quote($token, '/') . '\/([\d.]+)/i', $ua, $match) === 1) {
+                return ['browser' => $name, 'version' => $match[1]];
+            }
         }
         return ['browser' => null, 'version' => null];
     }
@@ -327,15 +330,44 @@ class Geolocation
         $host = $this->server['HTTP_HOST'] ?? $this->server['SERVER_NAME'] ?? '';
 
         // Check for localhost, local IPs, or missing Cloudflare headers
-        return $ip === null ||
-               $ip === '127.0.0.1' ||
-               $ip === '::1' ||
-               str_starts_with($ip, '192.168.') ||
-               str_starts_with($ip, '10.') ||
-               str_starts_with($ip, '172.16.') ||
+        return $this->isNonPublicIp($ip) ||
                str_contains($host, 'localhost') ||
                str_contains($host, '.local') ||
                !isset($this->server['HTTP_CF_IPCOUNTRY']);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function parseAcceptLanguages(): array
+    {
+        $header = trim((string) ($this->server['HTTP_ACCEPT_LANGUAGE'] ?? ''));
+        if ($header === '') {
+            return [];
+        }
+
+        $languages = [];
+        foreach (explode(',', $header) as $part) {
+            $tag = trim(explode(';', $part, 2)[0]);
+            if ($tag !== '') {
+                $languages[] = $tag;
+            }
+        }
+
+        return $languages;
+    }
+
+    private function isNonPublicIp(?string $ip): bool
+    {
+        if ($ip === null) {
+            return true;
+        }
+
+        return filter_var(
+            $ip,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+        ) === false;
     }
 
     /**
