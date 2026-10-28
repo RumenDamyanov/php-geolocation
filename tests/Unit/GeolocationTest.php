@@ -24,7 +24,7 @@ describe('Geolocation', function () {
     it('returns null if accept-language header is missing', function () {
         $geo = new \Rumenx\Geolocation\Geolocation([]);
         expect($geo->getPreferredLanguage())->toBeNull();
-        expect($geo->getAllLanguages())->toBe(['']);
+        expect($geo->getAllLanguages())->toBe([]);
     });
 
     it('maps country to language (case-insensitive)', function () {
@@ -230,6 +230,7 @@ describe('Geolocation', function () {
             ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/114.0.0.0', 'Chrome'],
             ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/89.0', 'Firefox'],
             ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15', 'Safari'],
+            ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0', 'Edge'],
             ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) Edg/90.0.818.56', 'Edge'],
             ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) OPR/76.0.4017.177', 'Opera'],
             ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) MSIE/10.0', 'MSIE'],
@@ -338,5 +339,48 @@ describe('Geolocation', function () {
             'ZZ' => [1 => 'de'], // No 0th index
         ]);
         expect($geo->getLanguageForCountry('ZZ'))->toBeNull();
+    });
+
+    it('normalizes a valid country code and rejects injected values', function () {
+        $geo = new \Rumenx\Geolocation\Geolocation([
+            'HTTP_CF_IPCOUNTRY' => 'us',
+        ]);
+        expect($geo->getCountryCode())->toBe('US');
+
+        $injected = new \Rumenx\Geolocation\Geolocation([
+            'HTTP_CF_IPCOUNTRY' => 'DE<script>',
+        ]);
+        expect($injected->getCountryCode())->toBeNull();
+    });
+
+    it('ignores a spoofed connecting IP that is not an address', function () {
+        $geo = new \Rumenx\Geolocation\Geolocation([
+            'HTTP_CF_CONNECTING_IP' => 'not-an-ip',
+            'REMOTE_ADDR' => '203.0.113.10',
+        ]);
+        expect($geo->getIp())->toBe('203.0.113.10');
+    });
+
+    it('strips the quality value from a single accept-language tag', function () {
+        $geo = new \Rumenx\Geolocation\Geolocation([
+            'HTTP_ACCEPT_LANGUAGE' => 'en-US;q=0.8',
+        ]);
+        expect($geo->getPreferredLanguage())->toBe('en-US');
+        expect($geo->getAllLanguages())->toBe(['en-US']);
+    });
+
+    it('treats a missing IP as local development', function () {
+        $geo = new \Rumenx\Geolocation\Geolocation([
+            'HTTP_CF_IPCOUNTRY' => 'US',
+        ]);
+        expect($geo->isLocalDevelopment())->toBeTrue();
+    });
+
+    it('treats the full private 172.16.0.0/12 range as local', function () {
+        $geo = new \Rumenx\Geolocation\Geolocation([
+            'HTTP_CF_IPCOUNTRY' => 'US',
+            'REMOTE_ADDR' => '172.20.0.4',
+        ]);
+        expect($geo->isLocalDevelopment())->toBeTrue();
     });
 });
